@@ -1,0 +1,67 @@
+{% extends "theme1/backend/base.html" %}
+
+{% block content %}
+ 
+   
+
+                   
+               
+                
+<div class="row">
+                <div class="col-md-12">
+				{{ form_msg }}
+                    <!-- Advanced Tables -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            				{{ form_title }}
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Catagory</th>
+                                            <th>Publish Date</th>
+                                            <th>Status</th>
+											<th>Action</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+									
+										{% for newslist in newslists %}
+											<tr class="{{ cycle(['even','odd'],loop.index) }}">
+                                            <td>{{ newslist.title }}</td>
+                                            <td>{{ newslist.catagory }}</td>
+                                            <td>{{ newslist.publish_date }}</td>
+											<td>{{ newslist.status }}</td>
+                                            <td><a href='edit/{{ newslist.id }}'>Edit</a> ||
+												<a href='delete/{{ newslist.id }}'>Delete</a>
+											</td>
+                                        </tr>
+										 {% endfor %}
+
+                                       
+                                        
+                                    </tbody>
+                      </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+					</div>
+                    <!-- End  Hover Rows  -->
+
+	
+
+
+
+
+
+
+
+{% endblock %}
+

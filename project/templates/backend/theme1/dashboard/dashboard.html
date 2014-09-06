@@ -1,0 +1,144 @@
+{% extends "theme1/backend/base.html" %}
+                   
+
+
+
+
+
+{% block content %}
+ 
+   
+   <div class="row">
+                   
+               
+                
+                
+                <div id="alerts"></div>
+				
+                    <div class="col-md-6 col-sm-12 col-xs-12">
+                        
+                          <div class="panel panel-default">
+                              
+                        <div class="panel-heading">
+                           Make Flexiload
+                        </div>
+                                <div class="panel-body">
+  
+                                        <form role="form">
+                                        <div class="form-group">
+                                            <label>Phone</label>
+                                            <input name="load_number" id="load_number" class="form-control">
+                                        </div>
+            
+                                        <div class="form-group">
+                                            <label>Amount</label>
+                                            <input name="load_amount" id="load_amount" class="form-control">
+                                        </div>
+                                            
+                                        <div class="form-group">
+                                            <label>Type</label>
+                                            <select name="load_type" id="load_type" class="form-control">
+                                                <option value="preapid">prepaid</option>
+                                                <option value="postpaid">postpaid</option>
+                                            </select>    
+                                        </div>
+                                             <div class="form-group">
+                                            
+                                               <button type="button"  class="btn btn-primary confirm">Submit</button>
+                                        
+                                             </div>
+                                            
+                    </form></div>
+                    </div>
+                    </div>    
+                    
+                    <div class="col-md-6 col-sm-12 col-xs-12">
+               
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                           Latest Flexiload
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Phone</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+									{% for latests in latest %}
+                                        <tr>
+                                            <td>latest.serial</td>
+                                            <td>latest.phone</td>
+                                            <td>latest.amount</td>
+                                            <td>latest.status</td>
+
+                                        </tr>
+										{% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                </div>
+                   
+    </div>
+
+
+
+
+	<div class="modal fade" id="confirm-box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-body"><div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title" id="myModalLabel">Do you want to proceed.?</h4>
+     </div>
+			<div class="modal-body">
+
+			<div class="table-responsive">
+
+			<table class="table table-striped table-bordered table-hover">
+			<tr><td><label>Phone Number</label></td>
+			<td><span id=fload_number></span></td>
+			</tr>
+
+
+			<tr>
+            <td><label>Amount</label></td>
+			<td><span id=fload_amount></span></td>
+			</tr>
+
+			<tr><td><label>Type</label></td>
+				<td><span id=fload_type></span>	</td>
+			</tr>
+
+			</table>
+
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a href="#"  class="btn btn-danger confirmflexiload">Submit</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}
+

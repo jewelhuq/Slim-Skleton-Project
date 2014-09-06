@@ -1,0 +1,1033 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Slim Framework Presentation</title>
+
+		<meta name="description" content="Presentation of Slim Framework + Composer + Eloquent ORM + Twig">
+		<meta name="author" content="Cesar Redondo">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+				<section>
+					<h1>Slim Framework</h1>
+					<h2>Composer</h2>
+					<h2>Eloquent</h2>
+					<h2>Twig</h2>				
+					
+					<p>
+						<small>Presentation by <a href="http://revul.es">Cesar</a> from <a href="http://bootsoft.com">Bootsoft</a></small>
+					</p>
+					<p><a href="https://twitter.com/C_Revul">@C_Revul</a></p>
+				</section>				
+
+				<section>
+					<h2>What is Slim Framework?</h2>					
+					<p>
+						Slim is a PHP micro framework that helps you quickly write simple yet powerful web applications and Restful APIs.
+					</p>
+					<br/>
+					<p>
+						<ul>
+							<li>Inspired by Sinatra</li>
+							<li>Favors cleanliness over terseness</li>
+							<li>Favors common cases over edge cases</li>						
+						</ul>
+					</p>
+					<br/>
+					<p>
+						<small>Webpage <a href="http://hakim.se">http://www.slimframework.com/</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Installation</h2>					
+					<p>There are two ways:</p>
+					<br/>
+					<p>					
+						<ol>
+							<li>Manual Installation</li>
+							<li>Using Composer (Later will be explained)</li>						
+						</ol>					
+					</p>
+				</section>
+
+				<section>
+					<h2>Hello World</h2>
+					<p><small>1. Manual installation</small></p>
+					<p>index.php</p>										
+					<pre><code>require 'Slim/Slim.php';
+
+\Slim\Slim::registerAutoloader();
+
+$app = new \Slim\Slim();
+
+$app->get('/hello/:name', function ($name) {
+    echo "Hello, $name";
+});
+
+$app->run();</code></pre>					
+				</section>
+
+				<section>
+					<h2>Hello World</h2>					
+					<p><small>2. Composer installation</small></p>
+					<p>index.php</p>					
+					<pre><code>require 'vendor/autoload.php';
+
+$app = new \Slim\Slim();
+
+$app->get('/hello/:name', function ($name) {
+    echo "Hello, $name";
+});
+
+$app->run();</code></pre>
+					<p>
+						...That's it!
+					</p>					
+				</section>
+
+				<section>
+					<h2>Hello World</h2>					
+					<p>.htaccess</p>
+					<pre><code>RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]</code></pre>					
+					<p>Don’t forget!</p>					
+				</section>
+
+				<section>
+					<h2>Routing</h2>					
+					<p>GET</p>
+					<pre><code>$app->get('/books/:id', function ($id) {
+    //Show book identified by $id
+});</code></pre>
+					<p>POST</p>
+					<pre><code>$app->post('/books', function () {
+    //Create book
+});</code></pre>
+					<p>PUT</p>
+					<pre><code>$app->put('/books/:id', function ($id) {
+    //Update book identified by $id
+});</code></pre>
+					<p>DELETE</p>					
+					<pre><code>$app->get('/books/:id', function ($id) {
+    //Show book identified by $id
+});</code></pre>
+				</section>
+
+				<section>
+					<h2>Routing</h2>
+					<p>Method Override</p>					
+					<p><small>Unfortunately, modern browsers do not provide native support for HTTP PUT and DELETE requests. To work around this limitation, ensure your HTML form’s method attribute is "post", then add a method override parameter to your HTML form like this:</small></p>
+					<pre><code>&lt;form action=&quot;/books/1&quot; method=&quot;post&quot;&gt;
+    ... other form fields here...
+    &lt;input type=&quot;hidden&quot; name=&quot;_METHOD&quot; value=&quot;PUT&quot;/&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;Update Book&quot;/&gt;
+&lt;/form&gt;</code></pre>					
+				</section>
+
+				<section>
+					<h2>Route Parameters</h2>					
+					<pre><code>$app->get('/books/:one/:two', function ($one, $two) {
+    echo "The first paramter is " . $one;
+    echo "The second parameter is " . $two;
+});</code></pre>					
+				</section>
+
+				<section>
+					<h2>Optional Route Parameters</h2>					
+					<pre><code style="font-size: 14px;">$app->get('/archive(/:year(/:month(/:day)))', function ($year = 2010, $month = 12, $day = 05) {
+    echo sprintf('%s-%s-%s', $year, $month, $day);
+});</code></pre>
+					<ul>
+						<li>/archive</li>
+						<li>/archive/2010</li>
+						<li>/archive/2010/12</li>
+						<li>/archive/2010/12/05</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Features</h2>
+					<p>That was the routing but Slim has much more...</p>
+					<ul>
+						<li>Template rendering</li>
+						<li>Flash messages</li>
+						<li>Secure cookies with AES-256 encryption</li>
+						<li>HTTP caching (ETag)</li>
+						<li>Loggin with custom log writers</li>
+						<li>Error handling and debugging</li>
+						<li>Middleware and hook architecture</li>
+						<li>Simple configuration</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Slim Framework</h2>
+					<h1>Composer</h1>
+					<h2>Eloquent</h2>
+					<h2>Twig</h2>					
+				</section>
+
+				<section>
+					<h2>What is Composer?</h2>
+					<p>
+						Composer is a Dependency Manager for PHP						
+					</p>					
+					<img width="178" src="http://getcomposer.org/img/logo-composer-transparent.png" alt="Composer">					
+				</section>
+
+				<section>
+					<h2>Installation</h2>
+					<p>Composer is very easy to install:</p><br/>
+					<p>Go to <a href="http://getcomposer.org">http://getcomposer.org</a> and download the installer</p>
+					<p>Or</p>
+					<p>Run this in your terminal</p>
+					<pre><code>curl -s https://getcomposer.org/installer | php</code></pre>				
+				</section>
+
+				<section>
+					<h2>Using Composer</h2>
+					<p>Into the Root of your project create the file:</p><br/>					
+					<p>composer.json</p>
+					<pre><code>{
+    "require": {
+        "slim/slim": "2.*"
+    }
+}</code></pre>				
+				</section>
+
+				<section>
+					<h2>Using composer</h2>
+					<p>To get the dependencies</p>
+					<p>run in the terminal</p>
+					<pre><code>composer install</code></pre>				
+				</section>
+
+				<section>
+					<h2>Using composer</h2>
+					<p>To Update the dependencies</p>
+					<p>run in the terminal</p>
+					<pre><code>composer update</code></pre>				
+				</section>
+
+				<section>
+					<h2>Packagist</h2>
+					<p>It is the main Composer repository</p>
+					<p><a href="http://packagist.org">http://packagist.org</a></p>
+					<p>There you can browse and search for packages.</p>					
+				</section>
+
+				<section>
+					<h2>Autoload</h2>
+					<p>Composer generates a <strong>vendor/autoload.php</strong> file</p>
+					<p>You can simply include this file and you will get autoloading</p>					
+					<pre><code>require 'vendor/autoload.php';</code></pre>						
+				</section>
+
+				<section>
+					<h2>Autoload</h2>
+					<p>You can even add your own code to the autoloader by adding an autoload field to composer.json.</p>
+					<pre><code>{
+    "autoload": {        
+    }
+}</code></pre>
+					<p>There are two ways to autoload your classes:</p>
+					<ol>
+						<li>PSR-0</li>
+						<li>Classmap</li>
+					</ol>					
+				</section>
+
+				<section>
+					<h2>PSR-0</h2>
+					<p>Here you define a mapping from namespaces to paths, relative to the package root</p>										
+					<pre><code>{
+    "autoload": {
+        "psr-0": {
+            "Monolog": "src/",
+            "Vendor\\Namespace\\": "src/",
+            "Vendor_Namespace_": "src/"
+        }
+    }
+}</code></pre>					
+					<p>This is the recommended way though since it offers greater flexibility</p>	
+					<p>After adding the autoload field, you have to re-run:</p>	
+					<pre><code>composer install</code></pre>
+				</section>
+
+				<section>
+					<h2>Classmap</h2>					
+					<p>You can use the classmap generation support to define autoloading for all libraries that do not follow PSR-0</p>
+					<pre><code>{
+    "autoload": {
+        "classmap": ["src/", "lib/", "Something.php"]
+    }
+}</code></pre>
+					<p>After adding a new class or file, you have to run:</p>	
+					<pre><code>composer update</code></pre>
+				</section>
+
+				<section>
+					<h2>create-project</h2>					
+					<p>You can use Composer to create new projects from an existing package.</p>
+					<p>This is the equivalent of doing a git clone/svn checkout followed by a composer install of the vendors.</p>
+					<pre><code>composer create-project slim/slim-skeleton [my-app-name]</code></pre>		
+				</section>
+
+				<section>
+					<h2>Example</h2>
+					<p>Installing Slim with Composer in Fortrabbit Server</p>
+					<iframe width="560" height="315" src="http://www.youtube.com/embed/UiqimGDDKFk" frameborder="0" allowfullscreen></iframe>					
+				</section>								
+				
+				<section>
+					<h2>Slim Framework</h2>
+					<h2>Composer</h2>
+					<h1>Eloquent</h1>
+					<h2>Twig</h2>					
+				</section>
+
+				<section>
+					<h2>Laravel Framework ORM</h2>
+					<p>Laravel comes with several tools to use with databases:</p>
+					<br/>
+					<ul>
+						<li>Schema Builder</li>
+						<li>Fluent Query Builder</li>
+						<li>Eloquent ORM</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Schema Builder</h2>
+					<p>Provides methods for creating and modifying your database tables.</p>
+				</section>
+
+				<section>
+					<h2>Schema Builder</h2>
+					<p>Create tables</p>
+					<pre><code>Schema::table('users', function($table)
+{
+    $table->create();
+    $table->increments('id');
+    $table->string('username');
+    $table->string('email');
+    $table->string('phone')->nullable();
+    $table->text('about');
+    $table->timestamps();
+});</code></pre>
+				</section>
+
+				<section>
+					<h2>Schema Builder</h2>
+					<p>Methods allow you to add columns</p>
+					<pre><code>$table->increments('id'); //Incrementing ID to the table
+$table->string('email'); //VARCHAR equivalent column
+$table->string('name', 100); //VARCHAR equivalent with a length
+$table->integer('votes'); //INTEGER equivalent to the table
+$table->float('amount'); //FLOAT equivalent to the table
+$table->decimal('amount', 5, 2); //DECIMAL with a precision and scale
+$table->boolean('confirmed'); //BOOLEAN equivalent to the table
+$table->date('created_at');	//DATE equivalent to the table
+$table->timestamp('added_on'); //TIMESTAMP equivalent to the table
+$table->timestamps(); //Adds created_at and updated_at columns
+$table->text('description'); //TEXT equivalent to the table
+$table->blob('data'); //BLOB equivalent to the table
+->nullable() //Designate that the column allows NULL values
+->default($value) //Declare a default value for a column
+->unsigned() //Set INTEGER to UNSIGNED</code></pre>
+				</section>
+
+				<section>
+					<h2>Schema Builder</h2>
+					<p>Defining indexes</p>
+					<pre><code>$table->primary('id'); //Adding a primary key
+$table->primary(array('fname', 'lname')); //Adding composite keys
+$table->unique('email'); //Adding a unique index
+$table->fulltext('description'); //Adding a full-text index
+$table->index('state');	//Adding a basic index</code></pre>
+				</section>
+
+				<section>
+					<h2>Fluent Query Builder</h2>
+					<p>The Fluent Query Builder is Laravel's powerful fluent interface for building SQL queries and working with your database.</p>
+					<p>All queries use prepared statements and are protected against SQL injection.</p>
+					<p>You can begin a fluent query using the table method on the DB class. Just mention the table you wish to query</p>
+					<pre><code>$query = DB::table('users');</code></pre>
+				</section>
+
+				<section>
+					<h2>Fluent Query Builder</h2>
+					<p>Retrieving records</p>
+					<pre><code>$users = DB::table('users')->get();</code></pre>
+					<pre><code>$user = DB::table('users')->first();</code></pre>
+					<pre><code>$user = DB::table('users')->find($id);</code></pre>
+					<pre><code>$email = DB::table('users')->where('id', '=', 1)->only('email');</code></pre>
+					<pre><code>$user = DB::table('users')->get(array('id', 'email as user_email'));</code></pre>
+					<pre><code>$user = DB::table('users')->distinct()->get();</code></pre>					
+				</section>
+
+				<section>
+					<h2>Fluent Query Builder</h2>
+					<p>Building Where Clauses</p>
+					<pre><code>return DB::table('users')
+    ->where('id', '=', 1)
+    ->or_where('email', '=', 'example@gmail.com')
+    ->first();</code></pre>
+					<pre><code>DB::table('users')->where_in('id', array(1, 2, 3))->get();
+
+DB::table('users')->where_not_in('id', array(1, 2, 3))->get();</code></pre>
+					<pre><code>$users = DB::table('users')
+    ->where('id', '=', 1)
+    ->or_where(function($query)
+    {
+        $query->where('age', '>', 25);
+        $query->where('votes', '>', 100);
+    })
+    ->get();</code></pre>									
+				</section>
+
+				<section>
+					<h2>Fluent Query Builder</h2>
+					<p>Table Joins</p>
+					<pre><code>DB::table('users')
+    ->join('phone', 'users.id', '=', 'phone.user_id')
+    ->get(array('users.email', 'phone.number'));</code></pre>
+					<pre><code>DB::table('users')
+    ->left_join('phone', 'users.id', '=', 'phone.user_id')
+    ->get(array('users.email', 'phone.number'));</code></pre>					
+				</section>
+
+				<section>
+					<h2>Fluent Query Builder</h2>
+					<p>Ordering results</p>
+					<pre><code>return DB::table('users')->order_by('email', 'desc')->get();</code></pre>
+					<pre><code>return DB::table('users')
+    ->order_by('email', 'desc')
+    ->order_by('name', 'asc')
+    ->get();</code></pre>					
+    				<p>Limit and Offset</p>
+    				<pre><code>return DB::table('users')->take(10)->get();</code></pre>
+    				<pre><code>return DB::table('users')->skip(10)->get();</code></pre>
+				</section>
+
+				<section>
+					<h2>Fluent Query Builder</h2>
+					<p>Aggregates</p>
+					<pre><code>$min = DB::table('users')->min('age');
+
+$max = DB::table('users')->max('weight');
+
+$avg = DB::table('users')->avg('salary');
+
+$sum = DB::table('users')->sum('votes');
+
+$count = DB::table('users')->count();</code></pre>
+					<pre><code>$count = DB::table('users')->where('id', '>', 10)->count();</code></pre>		
+				</section>
+
+				<section>
+					<h2>Fluent Query Builder</h2>
+					<p>Insert - Update - Delete</p>
+					<pre><code>DB::table('users')->insert(array('email' => 'example@gmail.com'));</code></pre>
+					<pre><code>$affected = DB::table('users')->update(array('email' => 'new_email@gmail.com'));</code></pre>
+					<pre><code>$affected = DB::table('users')->where('id', '=', 1)->delete();</code></pre>
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Eloquent is an ORM (Object-relational mapper) very easy to use</p>
+					<br/>
+					<p>Define a simple model</p>
+					<pre><code>class User extends Eloquent {}</code></pre>					
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Conventions</p>					
+					<ul>
+						<li>Each table should have a primary key named <strong>id</strong></li>
+						<li>Each table name should be the plural of its corresponding model name</li>
+					</ul>
+					<p><small>But you can change it...</small></p>
+					<pre><code>class User extends Eloquent {
+	protected $table = 'my_users';
+	protected $key = 'id_user';    
+}</code></pre>					
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Retrieving Models</p>
+					<p>Of course every method that is available through the Fluent Query Builder is available in Eloquent</p>					
+					<pre><code>$user = User::where('email', '=', $email)->first();
+
+$user = User::where_email($email)->first();
+
+$users = User::where_in('id', array(1, 2, 3))->or_where('email', '=', $email)->get();
+
+$users = User::order_by('votes', 'desc')->take(10)->get();</code></pre>					
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Aggregates</p>
+					<p>Of course every method that is available through the Fluent Query Builder is available in Eloquent</p>					
+					<pre><code>$min = User::min('id');
+
+$max = User::max('id');
+
+$avg = User::avg('id');
+
+$sum = User::sum('id');
+
+$count = User::count();</code></pre>
+					<pre><code>$count = User::where('id', '>', 10)->count();</code></pre>
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Inserting and Updating Models</p>
+					<p>Of course every method that is available through the Fluent Query Builder is available in Eloquent</p>					
+					<pre><code>$user = new User; //Insert
+$user = User::find(1); // Or getting first for Update
+
+$user->email = 'example@gmail.com';
+$user->password = 'secret';
+
+$user->save();</code></pre>
+					<small>Another way to insert a new record</small>
+					<pre><code>$user = User::create(array('email' => 'example@gmail.com'));</code></pre>
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p><strong>created_at</strong> and <strong>updated_at</strong></p>
+					<p>Whenver you save the model, the creation an update timestamps will be set automatically</p>					
+					<pre><code>class User extends Eloquent {
+     public $timestamps = true;
+}</code></pre>
+					<small>You can update the <strong>update_at</strong> without saving the model</small>
+					<pre><code>$comment = Comment::find(1);
+$comment->touch();</code></pre>
+					<small>Or</small>
+					<pre><code>$comment = Comment::find(1);
+$comment->timestamp();
+//do something else here, but not modifying the $comment model data
+$comment->save();</code></pre>
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Relationships</p>
+					<ul>
+						<li>One-to-One</li>
+						<li>One-To-Many</li>
+						<li>Many-To-Many</li>
+					</ul>					
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Relation <strong>One-To-One</strong></p>					
+					<pre><code>class User extends Eloquent {
+
+     public function phone()
+     {
+          return $this->has_one('Phone');
+     }
+
+}</code></pre>
+					<small>Now execute</small>					
+					<pre><code>$phone = User::find(1)->phone()->first();</code></pre>
+					<small>Two queries will be performed</small>
+					<pre><code>SELECT * FROM "users" WHERE "id" = 1
+
+SELECT * FROM "phones" WHERE "user_id" = 1</code></pre>
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Relation <strong>One-To-Many</strong></p>					
+					<pre><code>class Post extends Eloquent {
+
+     public function comments()
+     {
+          return $this->has_many('Comment');
+     }
+
+}</code></pre>
+					<small>Now execute</small>					
+					<pre><code>$comments = Post::find(1)->comments()->get();
+
+$comments = Post::find(1)->comments;</code></pre>
+					<small>Two queries will be performed</small>
+					<pre><code>SELECT * FROM "posts" WHERE "id" = 1
+
+SELECT * FROM "comments" WHERE "post_id" = 1</code></pre>
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Relation <strong>Many-To-Many</strong></p>
+					<p>This is the most complicated, for the example create 3 tables</p>
+					<small>users</small>
+					<pre><code>id    - INTEGER
+email - VARCHAR</code></pre>
+					<small>roles</small>
+					<pre><code>id   - INTEGER
+name - VARCHAR</code></pre>
+					<small>role_user</small>
+					<pre><code>id      - INTEGER
+user_id - INTEGER
+role_id - INTEGER</code></pre>					
+				</section>
+
+				<section>
+					<h2>Eloquent ORM</h2>
+					<p>Relation <strong>Many-To-Many</strong></p>					
+					<pre><code>class User extends Eloquent {
+
+     public function roles()
+     {
+          return $this->has_many_and_belongs_to('Role');
+     }
+
+}</code></pre>
+					<small>Now execute</small>					
+					<pre><code>$roles = User::find(1)->roles()->get();</code></pre>	
+					<small>Or</small>
+					<pre><code>$roles = User::find(1)->roles;</code></pre>										
+				</section>
+
+				<section>
+					<h2>Slim Framework</h2>
+					<h2>Composer</h2>
+					<h2>Eloquent</h2>
+					<h1>Twig</h1>
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Twig is the flexible, fast and secure template language for PHP</p>
+					<p>Created by Fabien Potencier (Symfony)</p>
+					<br/>
+					<p><a href="http://twig.sensiolabs.org/">http://twig.sensiolabs.org/</a>
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Example .html using Twig</p>					
+					<pre><code>&lt;!DOCTYPE html&gt;<br/>&lt;html&gt;<br/>    &lt;head&gt;<br/>        &lt;title&gt;My Webpage&lt;/title&gt;<br/>    &lt;/head&gt;<br/>    &lt;body&gt;<br/>        &lt;ul id=&quot;navigation&quot;&gt;<br/>        {% for item in navigation %}<br/>            &lt;li&gt;&lt;a href=&quot;{{ item.href }}&quot;&gt;{{ item.caption }}&lt;/a&gt;&lt;/li&gt;<br/>        {% endfor %}<br/>        &lt;/ul&gt;<br/><br/>        &lt;h1&gt;My Webpage&lt;/h1&gt;<br/>        {{ a_variable }}<br/>    &lt;/body&gt;<br/>&lt;/html&gt;</code></pre>
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Variables</p>
+					<pre><code>{{ foo.bar }}
+{{ foo['bar'] }}</code></pre>
+					<small>setting variables</small>
+					<pre><code>{% set foo = 'foo' %}
+{% set foo = [1, 2] %}
+{% set foo = {'foo': 'bar'} %}</code></pre>					
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Filters</p>
+					<small>The following example removes all HTML tags</small>
+					<pre><code>{{ name|striptags|title }}</code></pre>
+					<small>Example joining a list by commas</small>
+					<pre><code>{{ list|join(', ') }}</code></pre>					
+					<small>Applying a list on a section of code</small>
+					<pre><code>{% filter upper %}
+  This text becomes uppercase
+{% endfilter %}</code></pre>
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Functions and Control structure</p>					
+					<pre><code>{% for i in range(low=1, high=10, step=2) %}
+    {{ i }},
+{% endfor %}</code></pre>
+					<small>To display a list</small>
+					<pre><code>&lt;h1&gt;Members&lt;/h1&gt;<br/>&lt;ul&gt;<br/>    {% for user in users %}<br/>        &lt;li&gt;{{ user.username|e }}&lt;/li&gt;<br/>    {% endfor %}<br/>&lt;/ul&gt;</code></pre>					
+					<small>If structure control</small>
+					<pre><code>{% if users|length &gt; 0 %}<br/>    &lt;ul&gt;<br/>        {% for user in users %}<br/>            &lt;li&gt;{{ user.username|e }}&lt;/li&gt;<br/>        {% endfor %}<br/>    &lt;/ul&gt;<br/>{% endif %}</code></pre>
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Comments</p>					
+					<pre><code>{# note: disabled template because we no longer use this
+    {% for user in users %}
+        ...
+    {% endfor %}
+#}</code></pre>					
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Encoding and working with Dates</p>	
+					<small>Encoding</small>				
+					<pre><code>{{ data|convert_encoding('UTF-8', 'iso-2022-jp') }}
+
+{# versus #}
+
+{{ data|convert_encoding(from='iso-2022-jp', to='UTF-8') }}</code></pre>					
+					<small>Formating Dates with Timezones</small>
+					<pre><code>{# both work #}
+{{ "now"|date('d/m/Y H:i', timezone="Europe/Paris") }}
+{{ "now"|date(timezone="Europe/Paris", 'd/m/Y H:i') }}</code></pre>					
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Template Inheritance</p>	
+					<small>We can create a base "skeleton" template with all common elements</small>				
+					<pre><code style="font-size: 17px;">&lt;!DOCTYPE html&gt;<br/>&lt;html&gt;<br/>    &lt;head&gt;<br/>        {% block head %}<br/>            &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot; /&gt;<br/>            &lt;title&gt;{% block title %}{% endblock %} - My Webpage&lt;/title&gt;<br/>        {% endblock %}<br/>    &lt;/head&gt;<br/>    &lt;body&gt;<br/>        &lt;div id=&quot;content&quot;&gt;{% block content %}{% endblock %}&lt;/div&gt;<br/>        &lt;div id=&quot;footer&quot;&gt;<br/>            {% block footer %}<br/>                &amp;copy; Copyright 2011 by &lt;a href=&quot;http://domain.invalid/&quot;&gt;you&lt;/a&gt;.<br/>            {% endblock %}<br/>        &lt;/div&gt;<br/>    &lt;/body&gt;<br/>&lt;/html&gt;</code></pre>					
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Template Inheritance</p>	
+					<small>We can create a base "skeleton" template with all common elements</small>				
+					<pre><code style="font-size: 17px;">{% extends &quot;base.html&quot; %}<br/><br/>{% block title %}Index{% endblock %}<br/>{% block head %}<br/>    {{ parent() }}<br/>    &lt;style type=&quot;text/css&quot;&gt;<br/>        .important { color: #336699; }<br/>    &lt;/style&gt;<br/>{% endblock %}<br/>{% block content %}<br/>    &lt;h1&gt;Index&lt;/h1&gt;<br/>    &lt;p class=&quot;important&quot;&gt;<br/>        Welcome to my awesome homepage.<br/>    &lt;/p&gt;<br/>{% endblock %}</code></pre>
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Macros</p>
+					<small>Useful to reuse often used HTML fragments to not repeat yourself</small>		
+					<pre><code style="font-size: 15px;">{% macro input(name, value = &quot;&quot;, type = &quot;text&quot;, size = 20) %}<br/>    &lt;input type=&quot;{{ type }}&quot; name=&quot;{{ name }}&quot; value=&quot;{{ value|e }}&quot; size=&quot;{{ size }}&quot; /&gt;<br/>{% endmacro %}</code></pre>
+					<small>Import the macro</small>		
+					<pre><code>{% import &quot;forms.html&quot; as forms %}<br/><br/>&lt;p&gt;{{ forms.input('username') }}&lt;/p&gt;</code></pre>
+				</section>
+
+				<section>					
+					<h1>All Together</h1>
+					<h2>Example</h2>
+				</section>
+
+				<section>					
+					<h2>Bootie Bowling Score</h2>
+					<p>Program to see the score of Bootsoft teams</p>					
+				</section>
+
+				<section>					
+					<h2>Database</h2>
+					<p>Two tables in MySQL</p>
+					<small>users</small>
+					<pre><code>id     - INTEGER
+name   - VARCHAR
+avatar - VARCHAR
+team   - VARCHAR</code></pre>
+					<small>scores</small>
+					<pre><code>id      - INTEGER
+round   - INTEGER
+points  - INTEGER
+user_id - INTEGER</code></pre>
+				</section>
+
+				<section>					
+					<h2>Composer</h2>
+					<p>We create the composer file in the root</p>					
+					<pre><code>{
+    "name": "Bowling",    
+    "require": {
+        "php": ">=5.3.0",
+        "slim/slim": "2.*",
+        "slim/extras": "2.*",
+        "twig/twig": "1.*",
+        "dhorrigan/capsule": "*"
+    }
+}</code></pre>
+					<small>In the console execute:</small>
+					<pre><code>composer install</code></pre>							
+				</section>
+
+				<section>					
+					<h2>Index and .htaccess</h2>
+					<small>.htaccess</small>
+					<pre><code>RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]</code></pre>					
+					<small>index.php</small>
+					<pre><code>require 'vendor/autoload.php';
+
+$app = new \Slim\Slim();
+
+$app->get('/', function () {
+    echo "Hello Bowling!!";
+});
+
+$app->run();</code></pre>
+				</section>
+
+				<section>					
+					<h2>Models</h2>
+					<small>models/User.php</small>
+					<pre><code>class User extends Illuminate\Database\Eloquent\Model {
+
+	protected $table = "Users";
+	public $timestamps = false;
+
+	public function scores() {
+		return $this->hasMany('Score');
+	}    
+
+}</code></pre>					
+					<small>models/Score.php</small>
+					<pre><code>class Score extends Illuminate\Database\Eloquent\Model {
+	
+	protected $table = "Scores";
+	public $timestamps = false;
+
+}</code></pre>
+				</section>
+
+				<section>					
+					<h2>Autoload Models</h2>
+					<p>To autoload the models we have to add it to composer.json</p>					
+					<pre><code>{
+    "name": "Bowling",    
+    "require": {
+        "php": ">=5.3.0",
+        "slim/slim": "2.*",
+        "slim/extras": "2.*",
+        "twig/twig": "1.*",
+        "dhorrigan/capsule": "*"
+    },
+    "autoload": {
+        "classmap": [
+            "models"
+        ]
+    }
+}</code></pre>
+					<small>In the console execute:</small>
+					<pre><code>composer update</code></pre>							
+				</section>
+
+				<section>					
+					<h2>Setting up database</h2>
+					<p>In the index.php add this code</p>					
+					<pre><code>// Make a new connection
+$app->db = Capsule\Database\Connection::make('default', array(
+    'driver'    => 'mysql',
+    'host'      => 'localhost',
+    'port'      => 3306,
+    'database'  => 'bowling',
+    'username'  => 'root',
+    'password'  => '',
+    'prefix'    => '',
+    'charset'   => "utf8",
+    'collation' => 'utf8_general_ci'    
+), true);</code></pre>					
+				</section>
+
+				<section>					
+					<h2>Generate the scores</h2>
+					<p>Off the record: I generate the Score rows randomly with this code</p>
+					<pre><code>$app->get('/generate', function () {
+    $users = User::all();
+    foreach ($users as $user) {
+        for ($i = 1; $i<=10; $i++) {
+            $oScore = new Score();
+            $oScore->round = $i;
+            $oScore->points = rand(0,10);
+            $oScore->user_id = $user->id;
+            $oScore->save();
+        }
+    }
+    echo "generated";
+});</code></pre>					
+				</section>
+
+				<section>					
+					<h2>Routing</h2>					
+					<small>/users</small>
+					<pre><code>$app->get('/users', function () {
+    $users = User::all();
+    echo $users->toJson();
+});</code></pre>
+					<small>/team/:team</small>
+					<pre><code>$app->get('/team/:team', function ($team) {   
+    $users = User::where('team', '=', $team)->get();    
+    echo $users->toJson();
+});</code></pre>
+
+					<small>/user/:id</small>
+					<pre><code>$app->get('/user/:id', function ($id) use ($app) {
+    $user = User::with('scores')->where('id', '=', $id)->get();
+    echo $user->toJson();    
+        
+    echo Score::where('user_id', '=', $id)->sum('points');
+});</code></pre>
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Now lets setup Twig in Slim</p>
+					<small>In the index change</small>
+					<pre><code>$app = new \Slim\Slim();</code></pre>					
+					<small>By</small>
+					<pre><code>// Setup custom Twig view
+$twigView = new \Slim\Extras\Views\Twig();
+
+$app = new \Slim\Slim(array(
+    'debug' => true,
+    'view' => $twigView,
+    'templates.path' => 'templates/',
+));</code></pre>					
+				</section>
+
+				<section>					
+					<h2>Templates</h2>
+					<p>We are going to get Zurb foundation (CSS Framework) using compass</p>			
+					<small>Execute in the console</small>
+					<pre><code>compass create public -r zurb-foundation --using foundation</code></pre>
+				</section>				
+
+				<section>					
+					<h2>Templates</h2>
+					<p>create base.html in templates</p>								
+					<pre><code>  &lt;!-- Nav Bar --&gt; <br/>  &lt;div class=&quot;row&quot;&gt;<br/>    &lt;div class=&quot;large-12 columns&quot;&gt;<br/>      &lt;div class=&quot;nav-bar right&quot;&gt;<br/>       &lt;ul class=&quot;button-group&quot;&gt;<br/>         &lt;li&gt;&lt;a href=&quot;/team/TEAM_1&quot; class=&quot;button&quot;&gt;Team 1&lt;/a&gt;&lt;/li&gt;<br/>         &lt;li&gt;&lt;a href=&quot;/team/TEAM_2&quot; class=&quot;button&quot;&gt;Team 2&lt;/a&gt;&lt;/li&gt;<br/>         &lt;li&gt;&lt;a href=&quot;/team/TEAM_3&quot; class=&quot;button&quot;&gt;Team 3&lt;/a&gt;&lt;/li&gt;<br/>         &lt;li&gt;&lt;a href=&quot;/team/TEAM_4&quot; class=&quot;button&quot;&gt;Team 4&lt;/a&gt;&lt;/li&gt;<br/>        &lt;/ul&gt;<br/>      &lt;/div&gt;<br/>      &lt;h1&gt;&lt;a href=&quot;/&quot;&gt;Bootsoft Bowling&lt;/a&gt;&lt;/h1&gt;<br/>      &lt;hr /&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/>  &lt;!-- End Nav --&gt;<br/>  <br/>  {% block content %}{% endblock %} </code></pre>
+				</section>
+
+				<section>					
+					<h2>Templates</h2>
+					<p>create players.html in templates</p>								
+					<pre><code>{% extends &quot;base.html&quot; %}<br/><br/>{% block content %}<br/><br/>  {% for user in users %}<br/>  &lt;div class=&quot;row&quot;&gt;             <br/>      &lt;div class=&quot;small-4 large-2 columns&quot;&gt;<br/>        &lt;img src=&quot;http://s3.amazonaws.com/37assets/svn/765-default-avatar.png&quot; width=&quot;60&quot;/&gt;<br/>      &lt;/div&gt;<br/>      &lt;div class=&quot;small-4 large-6 columns&quot;&gt;<br/>        &lt;h2&gt;{{ user.name|e }}&lt;/h2&gt;          <br/>      &lt;/div&gt;<br/>      &lt;div class=&quot;small-4 large-2 columns&quot;&gt;<br/>        &lt;h3&gt;{{ user.score }}&lt;/h3&gt;<br/>      &lt;/div&gt;      <br/>  &lt;/div&gt;<br/>  {% endfor %}<br/><br/>{% endblock %}</code></pre>
+				</section>
+
+				<section>					
+					<h2>Templates</h2>
+					<p>Now at index.php change the code to</p>								
+					<pre><code>$app->get('/', function () use ($app) {
+    $users = User::all();
+
+    foreach ($users as $user) {
+        $user->score = Score::where('user_id', '=', $user->id)->sum('points');
+    }
+    
+    $app->render('players.html', array('users' => $users));
+});</code></pre>
+				</section>
+
+				<section>					
+					<h1>Some Links</h1>
+				</section>
+
+				<section>					
+					<h2>Example</h2>
+					<p>Get the Bootsoft Bowling example</p>
+					<p><a href="https://github.com/revuls/Bootsoft-Bowling">https://github.com/revuls/Bootsoft-Bowling</a></p>					
+				</section>
+
+				<section>					
+					<h2>Slim Framework</h2>
+					<p>Official Website</p>
+					<p><a href="http://www.slimframework.com/">http://www.slimframework.com/</a></p>
+					<p>PHP the Rigth Way</p>
+					<p><a href="http://www.phptherightway.com/">http://www.phptherightway.com/</a></p>
+					<p>Keeping it Small (Jeremy Kendall)</p>
+					<p><a href="http://goo.gl/QanWR">http://goo.gl/QanWR</a></p>
+					<p>Slim + Composer + Eloquent ORM (Phil Sturgeon)</p>
+					<p><a href="http://goo.gl/o8OB2">http://goo.gl/o8OB2</a></p>					
+				</section>
+
+				<section>					
+					<h2>Composer</h2>
+					<p>Official Website</p>
+					<p><a href="http://getcomposer.org/">http://getcomposer.org/</a></p>
+				</section>
+
+				<section>					
+					<h2>Eloquent ORM</h2>
+					<p>Laravel Framework</p>
+					<p><a href="http://laravel.com/">http://laravel.com/</a></p>
+					<p>Laravel Eloquent ORM</p>
+					<p><a href="http://laravel.com/docs/database/eloquent">http://laravel.com/docs/database/eloquent</a></p>
+				</section>
+
+				<section>					
+					<h2>Twig</h2>
+					<p>Official Website</p>
+					<p><a href="http://twig.sensiolabs.org/">http://twig.sensiolabs.org/</a></p>
+				</section>
+
+				<section>
+					<h1>THE END</h1>
+					<h2>Thank you!</h2>
+					<h3>BY Cesar</h3>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
+
